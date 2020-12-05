@@ -6,16 +6,23 @@
 	  <meta http-equiv="X-UA-Compatible" content="ie=edge">
 	  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" integrity="sha256-h20CPZ0QyXlBuAw7A+KluUYx/3pK+c7lYEpqLTlxjYQ=" crossorigin="anonymous" />
 	  <link rel="stylesheet" href="main.css">
-	<title>Sortable List</title>
+	<title>Spech Text Reader</title>
 </head>
 <body>
-	<h1>10 Largest Countries</h1>
-	<p>Drag and drop the items into their corresponding spots</p>
-	<ul class="draggable-list" id="draggable-list"></ul>
-	<button class="check-btn" id="check">
-		Check Order
-		<i class="fas fa-paper-plane"></i>
+	<div class="container">
+	<h1>Speech Text Reader</h1>
+	<button id="toggle" class="btn btn-toggle">
+		Toggle Text Box
 	</button>
+	<div class="text-box" id="text-box">
+		<div id="close" class="close">X</div>
+		<h3>Choose Voice</h3>
+		<select id="voices"></select>
+		<textarea id="text" placeholder="Enter text to read..."></textarea>
+		<button class="btn" id="read">Read Text</button>
+	</div>
+	<main></main>
+	</div>
 	<script src="script.js" defer></script>
 </body>
 </html>

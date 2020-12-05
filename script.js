@@ -1,115 +1,135 @@
-const draggable_list = document.getElementById('draggable-list');
-const check = document.getElementById('check');
+const main = document.querySelector('main');
+const voicesSelect = document.getElementById('voices');
+const textArea = document.getElementById('text');
+const readBtn = document.getElementById('read');
+const toggleBtn = document.getElementById('toggle');
+const closeBtn = document.getElementById('close');
 
-const largestCountry = [
-	'Russia',
-	'Canada',
-	'United States',
-	'China',
-	'Brazil',
-	'Australia',
-	'India',
-	'Argentina',
-	'Kazakhstan',
-	'Algeria'
+const data = [{
+        image: './images/drink.jpg',
+        text: "I'm thirsty"
+    },
+    {
+        image: './images/food.jpg',
+        text: "I'm hungry"
+    },
+    {
+        image: './images/tired.jpg',
+        text: "I'm tired"
+    },
+    {
+        image: './images/hurt.jpg',
+        text: "I'm hurt"
+    },
+    {
+        image: './images/happy.jpg',
+        text: "I'm happy"
+    },
+    {
+        image: './images/angry.jpg',
+        text: "I'm angry"
+    },
+    {
+        image: './images/sad.jpg',
+        text: "I'm sad"
+    },
+    {
+        image: './images/scared.jpg',
+        text: "I'm scared"
+    },
+    {
+        image: './images/outside.jpg',
+        text: "I want to go outside"
+    },
+    {
+        image: './images/home.jpg',
+        text: "I want to go home"
+    },
+    {
+        image: './images/school.jpg',
+        text: "I want to go to school"
+    },
+    {
+        image: './images/cinema.jpg',
+        text: "I want ot go to cinema"
+    }
 ];
 
-//Store List Items
-const listItems = [];
+data.forEach(createBox);
 
-let dragStartIndex;
+//Create Speech Boxes
+function createBox(item, index) {
+    const box = document.createElement('div');
+    const { image, text } = item;
+    box.classList.add('box');
+    box.innerHTML = `   
+	<img src="${image}" alt="${text}">
+	<p class="info">${text}</p>
+	`;
 
-createList();
+	box.addEventListener('click', ()=>{
+		setTextMessage(text);
+		speakText();
 
-//Insert list items into DOM
-
-function createList() {
-	[...largestCountry]
-	.map(a => ({ value: a, sort: Math.random()}))
-	.sort((a,b)=> a.sort - b.sort)
-	.map(a=> a.value)
-	.forEach((country, index)=> {
-		console.log(country);
-
-		const listItem= document.createElement('li');
-
-		listItem.setAttribute('data-index', index);
-
-		listItem.innerHTML = `   
-			<span class="number">${index + 1}</span>
-			<div class="draggable" draggable="true">
-			<p class="country-name">${country}</p>
-			<i class='fas fa-grip-lines'></i>
-			</div>
-		`;
-		listItems.push(listItem);
-		draggable_list.appendChild(listItem);
+		//Add active effect
+		box.classList.add('active');
+		setTimeout(()=> box.classList.remove('active'), 800);
 	});
 
-	addeventListeners();
+    main.appendChild(box);
+ 
 }
 
-function dragStart(){
-	dragStartIndex = +this.closest('li').getAttribute('data-index');
+//Init speech synth
+const message = new SpeechSynthesisUtterance();
+
+//Store voices
+let voices = [];
+
+function getVoices() {
+    voices = speechSynthesis.getVoices();
+
+    voices.forEach(voice => {
+        const option = document.createElement('option');
+        option.value = voice.name;
+        option.innerText = `${voice.name} ${voice.lang}`;
+
+        voicesSelect.appendChild(option);
+    })
+};
+
+//Set text
+function setTextMessage(text){
+	message.text = text;
 }
 
-function dragEnter(){
-	this.classList.add('over');
+//Speak text 
+function speakText(){
+	speechSynthesis.speak(message);
 }
 
-function dragOver(e){
-	e.preventDefault();
+//Set voice
+function setVoice(e){
+	message.voice = voices.find(voice => voice.name === e.target.value);
 }
 
-function dragLeave(){
-	this.classList.remove('over');
-}
-
-function dragDrop(){
-	const dragEndIndex = +this.getAttribute('data-index');
-	swapItems(dragStartIndex, dragEndIndex);
-	this.classList.remove('over');
-	console.log(dragEndIndex);
-}
+//Voices change
+speechSynthesis.addEventListener('voiceschanged', getVoices);
 
 
-//Swap list items
-function swapItems(fromIndex, toIndex){
-	const itemOne = listItems[fromIndex].querySelector('.draggable');
-	const itemTwo = listItems[toIndex].querySelector('.draggable');
-	listItems[fromIndex].appendChild(itemTwo);
-	listItems[toIndex].appendChild(itemOne);
-}
+//Toggle text box
 
+toggleBtn.addEventListener('click', () => document.getElementById('text-box').classList.toggle('show'));
 
-//Check the order of the list items on button click
-function checkOrder() {
-	listItems.forEach((listItem,index)=> {
-		const countryName = listItem.querySelector('.draggable').innerText.trim();
-		if(countryName !== largestCountry[index]){
-			listItem.classList.add('wrong');
-		} else {
-			listItem.classList.remove('wrong');
-			listItem.classList.add('right');
-		}
-	})
-}
+closeBtn.addEventListener('click', () => document.getElementById('text-box').classList.remove('show'));
 
+//Change voice
+voicesSelect.addEventListener('change', setVoice);
 
-function addeventListeners(){
-	const draggables = document.querySelectorAll('.draggable');
-	const dragListItems = document.querySelectorAll('.draggable-list li');
+//Read text button
+readBtn.addEventListener('click', ()=> {
+	setTextMessage(textArea.value);
+	speakText();
+})
 
-	draggables.forEach(draggable=> {
-		draggable.addEventListener('dragstart', dragStart)
-		});
-
-	dragListItems.forEach(item=> {
-		item.addEventListener('dragover', dragOver)
-		item.addEventListener('drop', dragDrop)
-		item.addEventListener('dragenter', dragEnter)
-		item.addEventListener('dragleave', dragLeave);
-});
-}
-
-check.addEventListener('click', checkOrder);
+getVoices();
