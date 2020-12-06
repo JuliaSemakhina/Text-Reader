@@ -51,7 +51,7 @@ const data = [{
     },
     {
         image: './images/cinema.jpg',
-        text: "I want ot go to cinema"
+        text: "I want to go to cinema"
     }
 ];
 
